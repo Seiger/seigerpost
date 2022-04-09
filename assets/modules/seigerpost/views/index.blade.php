@@ -91,7 +91,7 @@
                 <input type="hidden" name="post" value="@if(isset($post['post'])) {{(int)$post['post']}} @else 0 @endif">
         </form>
     @endif
-    <img src="{{$sPost->evo->getConfig('site_url', '/')}}assets/snippets/phpthumb/noimage.png" id="img-preview" style="display: none;" class="post-thumbnail">
+    <img src="{{evo()->getConfig('site_url', '/')}}assets/snippets/phpthumb/noimage.png" id="img-preview" style="display: none;" class="post-thumbnail">
 
     <div class="modal fade" id="addTag" tabindex="-1" role="dialog" aria-hidden="true">
         <div class="modal-dialog">

@@ -4,15 +4,13 @@
  */
 
 use EvolutionCMS\Facades\UrlProcessor;
-use EvolutionCMS\Main\Seiger;
 use EvolutionCMS\Models\SiteContent;
 use Illuminate\Support\Facades\Cache;
 use sPost\Models\sPostContent;
 use sPost\Models\sPostTag;
-use Symfony\Component\DomCrawler\Crawler;
 
 $e = evo()->event;
-$sPost  = new sPost();
+$sPost = new sPost();
 
 /**
  * Track a post entry by a resource alias that is a representation of the post type on the front.
@@ -23,53 +21,6 @@ if ($e->name == 'OnPageNotFound') {
     $pathArr = explode('/', request()->path());
     $path = end($pathArr);
     if (trim($path)) {
-        if ($path == 'seigeradmin') {
-            $link = "https://baccarat.team/sitemap/";
-
-            $html = file_get_contents($link);
-            $crawler = new Crawler(null, $link);
-            $crawler->addHtmlContent($html, 'UTF-8');
-
-            $nodeValues = $crawler->filter('.sitemaps_box')->first()->filter('li')->each(function (Crawler $node, $i) {
-                $arr['link'] = $node->filter('a')->link()->getUri();
-                $arr['title'] = $node->text();
-                return $arr;
-            });
-
-            $allCasinos = [];
-            if (is_array($nodeValues) && count($nodeValues)) {
-                foreach ($nodeValues as $nodeValue) {
-                    $allCasinos[$nodeValue['title']] = $nodeValue['link'];
-                }
-            }
-
-            $casinos = \Casino\Models\sCasinoContent::all();
-
-            foreach ($casinos as $casino) {
-                if (isset($allCasinos[$casino->title])) {
-                    unset($allCasinos[$casino->title]);
-                }
-            }
-
-            if (count($allCasinos)) {
-                foreach ($allCasinos as $title => $allCasino) {
-                    $html = file_get_contents($allCasino);
-                    $crawler = new Crawler(null, $allCasino);
-                    $crawler->addHtmlContent($html, 'UTF-8');
-
-                    dd(
-                        $title,
-                        $allCasino,
-                        $crawler->filter('title')->first()->text(),
-                        $crawler->filter('[name="description"]')->first()->attr('content'),
-                        $crawler->filter('.main_about_rait_box')->first()->filter('ul')->html()
-                    );
-                }
-            }
-
-            dd($allCasinos);
-        }
-
         $postList = Cache::get('postList');
         if (isset($postList[$path])) {
             $postId = $postList[$path];
@@ -81,8 +32,8 @@ if ($e->name == 'OnPageNotFound') {
                 $error_page = evo()->getConfig('error_page', 1);
                 $systemCacheKey = evo()->systemCacheKey;
                 evo()->systemCacheKey = str_replace(
-                    $error_page.'_',
-                    $proxies[$postTypes[$postId]].'_'.$postId.'_',
+                    $error_page . '_',
+                    $proxies[$postTypes[$postId]] . '_' . $postId . '_',
                     $systemCacheKey
                 );
                 evo()->sendForward($proxies[$postTypes[$postId]]);
@@ -97,11 +48,11 @@ if ($e->name == 'OnPageNotFound') {
                 array_pop($pathArr);
                 $alias = implode('/', $pathArr);
                 if (isset(UrlProcessor::getFacadeRoot()->documentListing[$alias])) {
-                    $error_page = evolutionCMS()->getConfig('error_page', 1);
+                    $error_page = evo()->getConfig('error_page', 1);
                     $systemCacheKey = evo()->systemCacheKey;
                     evo()->systemCacheKey = str_replace(
-                        $error_page.'_',
-                        UrlProcessor::getFacadeRoot()->documentListing[$alias].'_'.$tagId.'_',
+                        $error_page . '_',
+                        UrlProcessor::getFacadeRoot()->documentListing[$alias] . '_' . $tagId . '_',
                         $systemCacheKey
                     );
                     evo()->sendForward(UrlProcessor::getFacadeRoot()->documentListing[$alias]);
@@ -122,10 +73,10 @@ if ($e->name == 'OnAfterLoadDocumentObject') {
         $postList = Cache::get('postList');
         if (isset($postList[$path])) {
             $postId = $postList[$path];
-            $lang = evolutionCMS()->getConfig('lang', 'base');
+            $lang = evo()->getConfig('lang', 'base');
             $post = $sPost->getPostArray($postId, $lang);
             if ($post && (($post['type'] == 0 && ($pathArr[0] == 'blog' || $pathArr[1] == 'blog') || ($post['type'] == 1 && ($pathArr[0] == 'news' || $pathArr[1] == 'news'))))) {
-                evolutionCMS()->documentObject = array_merge($e->params['documentObject'], $post);
+                evo()->documentObject = array_merge($e->params['documentObject'], $post);
             }
         }
 
@@ -141,12 +92,12 @@ if ($e->name == 'OnAfterLoadDocumentObject') {
                     if ($tag) {
                         $tagArr = [];
                         foreach ($tag->toArray() as $field => $item) {
-                            if (in_array($field, ['alias', $lang, $lang.'_content'])) {
+                            if (in_array($field, ['alias', $lang, $lang . '_content'])) {
                                 switch ($field) {
                                     case $lang :
                                         $tagArr['pagetitle'] = $item;
                                         break;
-                                    case $lang.'_content' :
+                                    case $lang . '_content' :
                                         $tagArr['content'] = $item;
                                         break;
                                     default :
@@ -208,8 +159,4 @@ if ($e->name == 'OnCacheUpdate') {
     Cache::forever('postList', $postList);
     Cache::forever('postTypes', $postTypes);
     Cache::forever('tagList', $tagList);
-
-    require_once MODX_BASE_PATH . 'core/custom/packages/main/src/Seiger.class.php';
-    $seiger = new Seiger();
-    $seiger->sitemapXML();
 }

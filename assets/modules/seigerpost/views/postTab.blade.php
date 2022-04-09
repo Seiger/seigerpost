@@ -100,7 +100,7 @@
                 <input type="text" id="cover" class="form-control" name="cover" value="{{$post->cover ?? ''}}" onchange="documentDirty=true;">
                 <input class="form-control" type="button" value="{{$_lang["insert"]}}" onclick="BrowseServer('cover')">
                 <div class="col-12">
-                    <div id="image_for_cover" class="image_for_field" data-image="{{$sPost->evo->getConfig('site_url', '/')}}{{$post->cover ?? ''}}" onclick="BrowseServer('cover')" style="background-image: url('{{$sPost->evo->getConfig('site_url', '/')}}{{$post->cover ?? ''}}');"></div>
+                    <div id="image_for_cover" class="image_for_field" data-image="{{evo()->getConfig('site_url', '/')}}{{$post->cover ?? ''}}" onclick="BrowseServer('cover')" style="background-image: url('{{evo()->getConfig('site_url', '/')}}{{$post->cover ?? ''}}');"></div>
                     <script>document.getElementById('cover').addEventListener('change', evoRenderImageCheck, false);</script>
                 </div>
             </div>

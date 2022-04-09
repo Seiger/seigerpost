@@ -1,11 +1,8 @@
 <?php namespace sPost\Models;
 
-require_once MODX_BASE_PATH . 'assets/modules/sAuthors/src/sAuthors.class.php';
-
 use Carbon\Carbon;
 use EvolutionCMS\Facades\UrlProcessor;
 use Illuminate\Database\Eloquent;
-use sAuthors\Model\sAuthors;
 
 class sPostContent extends Eloquent\Model
 {
@@ -17,13 +14,13 @@ class sPostContent extends Eloquent\Model
      *
      * @return array
      */
-    public static function listTypes():array
+    public static function listTypes(): array
     {
         global $_lang;
 
         return [
-            self::TYPE_ARTICLE => $_lang['spost_'.self::TYPE_ARTICLE],
-            self::TYPE_NEWS => $_lang['spost_'.self::TYPE_NEWS],
+            self::TYPE_ARTICLE => $_lang['spost_' . self::TYPE_ARTICLE],
+            self::TYPE_NEWS => $_lang['spost_' . self::TYPE_NEWS],
         ];
     }
 
@@ -32,7 +29,7 @@ class sPostContent extends Eloquent\Model
      *
      * @return array
      */
-    public static function listProxies():array
+    public static function listProxies(): array
     {
         global $_lang;
 
@@ -47,7 +44,7 @@ class sPostContent extends Eloquent\Model
      *
      * @return string
      */
-    public function typeLabel():string
+    public function typeLabel(): string
     {
         $list = self::listStatus();
 
@@ -81,8 +78,7 @@ class sPostContent extends Eloquent\Model
      */
     public function scopeLang($query, $locale)
     {
-        return $this->leftJoin('s_post_translates', 's_post_contents.id', '=', 's_post_translates.post')
-            ->where('lang', '=', $locale);
+        return $this->leftJoin('s_post_translates', 's_post_contents.id', '=', 's_post_translates.post')->where('lang', '=', $locale);
     }
 
     /**
@@ -92,7 +88,7 @@ class sPostContent extends Eloquent\Model
      */
     public function getAuthorNameAttribute()
     {
-        $lang = evolutionCMS()->getConfig('lang', 'en');
+        $lang = evo()->getConfig('lang', 'uk');
         $lang = str_replace('ind', 'id', $lang);
         $sAuthors = new sAuthors();
         $author = $sAuthors->getAuthor($this->author, $lang);
@@ -106,12 +102,12 @@ class sPostContent extends Eloquent\Model
      */
     public function getAuthorLinkAttribute()
     {
-        $lang = evolutionCMS()->getConfig('lang', 'en');
+        $lang = evo()->getConfig('lang', 'uk');
         $lang = str_replace('ind', 'id', $lang);
         $sAuthors = new sAuthors();
         $author = $sAuthors->getAuthor($this->author, $lang);
-        $base_url = evolutionCMS()->getConfig('base_url', MODX_SITE_URL);
-        $link = $base_url.$author->alias.'/';
+        $base_url = evo()->getConfig('base_url', MODX_SITE_URL);
+        $link = $base_url . $author->alias . '/';
         return $link;
     }
 
@@ -122,7 +118,7 @@ class sPostContent extends Eloquent\Model
      */
     public function getPubFormatAttribute()
     {
-        $lang = evolutionCMS()->getConfig('lang', 'en');
+        $lang = evo()->getConfig('lang', 'en');
         $lang = str_replace('ind', 'id', $lang);
         $pub_date = Carbon::parse($this->pub_date)->locale($lang);
         return $pub_date->isoFormat('D MMMM YYYY');
@@ -135,7 +131,7 @@ class sPostContent extends Eloquent\Model
      */
     public function getAgoFormatAttribute()
     {
-        $lang = evolutionCMS()->getConfig('lang', 'en');
+        $lang = evo()->getConfig('lang', 'en');
         $lang = str_replace('ind', 'id', $lang);
         $pub_date = Carbon::parse($this->pub_date)->locale($lang);
         return $pub_date->diffForHumans();
@@ -148,11 +144,11 @@ class sPostContent extends Eloquent\Model
      */
     public function getLinkAttribute()
     {
-        $base_url = evolutionCMS()->getConfig('base_url', MODX_SITE_URL);
+        $base_url = evo()->getConfig('base_url', MODX_SITE_URL);
         if ($this->type == 0) {
-            $link = /*rtrim($base_url, '/').*/UrlProcessor::makeUrl(106).$this->alias.'/';
+            $link = rtrim($base_url, '/') . $this->alias . '/';
         } else {
-            $link = /*rtrim($base_url, '/').*/UrlProcessor::makeUrl(12).$this->alias.'/';
+            $link = rtrim($base_url, '/') . $this->alias . '/';
         }
         return $link;
     }

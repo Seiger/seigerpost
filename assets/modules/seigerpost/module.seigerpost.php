@@ -1,29 +1,18 @@
 <?php
 /**
- *	News management module
+ * News management module
  */
 
-use sAuthors\Model\sAuthors;
-use PageNavigation\Model\PageNavigation;
-
-if(!defined('IN_MANAGER_MODE') || IN_MANAGER_MODE != 'true') die("No access");
+if (!defined('IN_MANAGER_MODE') || IN_MANAGER_MODE != 'true') die("No access");
 
 require_once MODX_BASE_PATH . 'assets/modules/seigerpost/sPost.class.php';
-require_once MODX_BASE_PATH . 'assets/modules/sAuthors/src/sAuthors.class.php';
-require_once MODX_BASE_PATH . 'assets/tvs/PageNav/src/PageNavigation.php';
 
-$sPost  = new sPost();
-$pageNav = new PageNavigation();
+$sPost = new sPost();
 $data['editor'] = '';
 $data['get'] = $_REQUEST['get'] ?? "posts";
 $data['sPost'] = $sPost;
-$data['lang_default'] = evolutionCMS()->getConfig('s_lang_default');
+$data['lang_default'] = evo()->getConfig('s_lang_default', 'uk');
 $data['url'] = $sPost->url;
-$data['tvId'] = 3;
-$data['tvId_epilog'] = 4;
-
-$sAuthors = new sAuthors();
-$data['authors'] = $sAuthors->authors();
 
 switch ($data['get']) {
     default:
@@ -43,20 +32,11 @@ switch ($data['get']) {
 
         $data['post'] = $post;
         $data['texts'] = $texts;
-        $data['heading'] = [];
-        $data['heading'] += $pageNav->getHeadersFromContent($texts['en']['content']);
-        array_unshift($data['heading'],$texts['en']['pagetitle']);
-        $data['heading_epilog'] = $pageNav->getHeadersFromContent($texts['en']['epilog']);
-        $data['heading_epilog'][] = 'Latest News';
-        $data['selected'] = $pageNav->getNavigation($data['tvId'],$post['post']);
-        $data['selectEpilog'] = $pageNav->getNavigation($data['tvId_epilog'],$post['post']);
     case "postAdd":
         $data['tags'] = $tags ?? [];
         $data['editor'] = $sPost->textEditor("content,epilog");
         break;
     case "postSave":
-        $pageNav->setModuleNav(request(), $data['tvId']);
-        $pageNav->setModuleNav(request(), $data['tvId_epilog']);
         $sPost->save(request());
         $data['tags'] = $tags ?? [];
         break;

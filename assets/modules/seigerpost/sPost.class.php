@@ -6,7 +6,6 @@
 require_once MODX_BASE_PATH . 'assets/modules/seigerpost/models/sPostContent.php';
 require_once MODX_BASE_PATH . 'assets/modules/seigerpost/models/sPostTranslate.php';
 require_once MODX_BASE_PATH . 'assets/modules/seigerpost/models/sPostTag.php';
-require_once MODX_BASE_PATH . 'assets/tvs/PageNav/src/PageNavigation.php';
 
 use Carbon\Carbon;
 use EvolutionCMS\Models\SiteContent;
@@ -20,7 +19,6 @@ use Illuminate\Support\Str;
 use sPost\Models\sPostContent;
 use sPost\Models\sPostTag;
 use sPost\Models\sPostTranslate;
-use PageNavigation\Model\PageNavigation;
 
 if (!class_exists('sPost')) {
     class sPost
@@ -29,14 +27,10 @@ if (!class_exists('sPost')) {
         public $url;
         public $perPage = 30;
         protected $basePath = MODX_BASE_PATH . 'assets/modules/seigerpost/';
-        protected $snippetId = 3;
-        protected $snippetIdEpilog = 4;
 
         public function __construct()
         {
-            $this->evo = evolutionCMS();
             $this->url = $this->moduleUrl();
-
             Paginator::defaultView('pagination');
         }
 
@@ -45,7 +39,7 @@ if (!class_exists('sPost')) {
          *
          * @return array
          */
-        public function posts():array
+        public function posts(): array
         {
             $posts = sPostContent::lang($this->langDefault())->orderByDesc('s_post_contents.updated_at')->get()->toArray();
 
@@ -61,7 +55,7 @@ if (!class_exists('sPost')) {
          * @param $skip
          * @return array
          */
-        public function frontPosts($lang, $type = 0, $perPage = 0, $skip = 0):object
+        public function frontPosts($lang, $type = 0, $perPage = 0, $skip = 0): object
         {
             $posts = (object)[];
             $skipped = [0];
@@ -100,7 +94,7 @@ if (!class_exists('sPost')) {
          * @param $limit
          * @return array
          */
-        public function latestPosts($lang, $type = 0, $limit = 0):array
+        public function latestPosts($lang, $type = 0, $limit = 0): array
         {
             $posts = [];
             $type = (int)$type;
@@ -109,7 +103,7 @@ if (!class_exists('sPost')) {
                 $limit = $this->perPage;
             }
 
-            $array = sPostContent::lang($lang)->whereType($type)->wherePublished(1)->orderByDesc('s_post_contents.pub_date')->limit($limit+1)->get();
+            $array = sPostContent::lang($lang)->whereType($type)->wherePublished(1)->orderByDesc('s_post_contents.pub_date')->limit($limit + 1)->get();
 
             if ($array) {
                 foreach ($array as $item) {
@@ -125,12 +119,10 @@ if (!class_exists('sPost')) {
          * @param array $ids
          * @return array
          */
-        public function onlyPosts(string $lang, array $ids):array
+        public function onlyPosts(string $lang, array $ids): array
         {
             $posts = [];
-
             $ids = array_filter($ids, 'intval');
-
             $array = sPostContent::lang($lang)->whereIn('post', $ids)->wherePublished(1)->orderByDesc('s_post_contents.pub_date')->get();
 
             if ($array) {
@@ -226,7 +218,7 @@ if (!class_exists('sPost')) {
                 $post->delete();
             }
 
-            return header('Location: '.$this->moduleUrl());
+            return header('Location: ' . $this->moduleUrl());
         }
 
         /**
@@ -253,7 +245,7 @@ if (!class_exists('sPost')) {
             $post->published = (int)$request->published;
             $post->pub_date = $pub_date;
             $post->alias = $alias;
-            $post->cover = $this->evo->db->escape($request->cover);
+            $post->cover = evo()->db->escape($request->cover);
             $post->type = (int)$request->type;
             $post->author = (int)$request->author;
             $post->save();
@@ -269,7 +261,7 @@ if (!class_exists('sPost')) {
                 $post->tags()->sync($request->get('tags'));
             }
 
-            return header('Location: '.$this->moduleUrl().'&get=post&i='.$post->id);
+            return header('Location: ' . $this->moduleUrl() . '&get=post&i=' . $post->id);
         }
 
         /**
@@ -277,9 +269,9 @@ if (!class_exists('sPost')) {
          *
          * @return string
          */
-        public function langDefault():string
+        public function langDefault(): string
         {
-            return $this->evo->getConfig('s_lang_default', 'base');
+            return evo()->getConfig('s_lang_default', 'base');
         }
 
         /**
@@ -287,11 +279,11 @@ if (!class_exists('sPost')) {
          *
          * @return array
          */
-        public function langTabs():array
+        public function langTabs(): array
         {
             global $_lang;
             $tabs = [];
-            $s_lang = $this->evo->getConfig('s_lang_config', '');
+            $s_lang = evo()->getConfig('s_lang_config', '');
 
             if (trim($s_lang)) {
                 $s_lang = explode(',', $s_lang);
@@ -313,18 +305,8 @@ if (!class_exists('sPost')) {
          * @param array $fields
          * @return void
          */
-        public function setContent(int $postId, string $lang, array $fields):void
+        public function setContent(int $postId, string $lang, array $fields): void
         {
-            $navigation = new PageNavigation();
-            $idArray = $navigation->getNavigation($this->snippetId, $postId);
-            $idArrayEpilog = $navigation->getNavigation($this->snippetIdEpilog, $postId);
-            if ($idArray) {
-                $fields['content'] = $navigation->setContentHeaderId($fields['content'],$idArray['en']['navigation_id']);
-            }
-            if ($idArrayEpilog) {
-                array_unshift($idArrayEpilog['en']['navigation_id'], 'null');
-                $fields['epilog'] = $navigation->setContentHeaderId($fields['epilog'],$idArrayEpilog['en']['navigation_id']);
-            }
             sPostTranslate::updateOrCreate(['post' => $postId, 'lang' => $lang], $fields);
         }
 
@@ -333,18 +315,18 @@ if (!class_exists('sPost')) {
          *
          * @return void
          */
-        public function checkTagsTable():void
+        public function checkTagsTable(): void
         {
             $tagsColumns = sPostTag::getTableColumns();
 
-            $s_lang = $this->evo->getConfig('s_lang_config', 'base');
+            $s_lang = evo()->getConfig('s_lang_config', 'base');
             if (trim($s_lang)) {
                 $s_lang = explode(',', $s_lang);
             }
 
             foreach ($s_lang as $item) {
-                if (!in_array($item.'_content', $s_lang)) {
-                    $s_lang[] = $item.'_content';
+                if (!in_array($item . '_content', $s_lang)) {
+                    $s_lang[] = $item . '_content';
                 }
             }
 
@@ -438,8 +420,9 @@ if (!class_exists('sPost')) {
          * @param $cacheFolder
          * @return array|string
          */
-        public function imgResize($image, $width, $height) {
-            return $this->evo->runSnippet('phpthumb', ['input' => $image, 'options' => 'w='.$width.',h='.$height.',zc=1']);
+        public function imgResize($image, $width, $height)
+        {
+            return evo()->runSnippet('phpthumb', ['input' => $image, 'options' => 'w=' . $width . ',h=' . $height . ',zc=1']);
         }
 
         /**
@@ -452,18 +435,18 @@ if (!class_exists('sPost')) {
         public function view($tpl, array $data = [])
         {
             global $_lang;
-            if (is_file($this->basePath.'lang/'.$this->evo->config['manager_language'].'.php')) {
-                require_once $this->basePath.'lang/'.$this->evo->config['manager_language'].'.php';
+            if (is_file($this->basePath . 'lang/' . evo()->getConfig('manager_language', 'uk') . '.php')) {
+                require_once $this->basePath . 'lang/' . evo()->getConfig('manager_language', 'uk') . '.php';
             }
-            if (is_file(MODX_BASE_PATH . 'assets/modules/seigerlang/lang/'.$this->evo->config['manager_language'].'.php')) {
-                require_once MODX_BASE_PATH . 'assets/modules/seigerlang/lang/'.$this->evo->config['manager_language'].'.php';
+            if (is_file(MODX_BASE_PATH . 'assets/modules/seigerlang/lang/' . evo()->getConfig('manager_language', 'uk') . '.php')) {
+                require_once MODX_BASE_PATH . 'assets/modules/seigerlang/lang/' . evo()->getConfig('manager_language', 'uk') . '.php';
             }
 
-            $data = array_merge($data, ['modx' => $this->evo, 'data' => $data, '_lang' => $_lang]);
+            $data = array_merge($data, ['modx' => evo(), 'data' => $data, '_lang' => $_lang]);
 
             View::getFinder()->setPaths([
-                $this->basePath.'views',
-                MODX_MANAGER_PATH.'views'
+                $this->basePath . 'views',
+                MODX_MANAGER_PATH . 'views'
             ]);
             echo View::make($tpl, $data);
             return true;
@@ -475,7 +458,7 @@ if (!class_exists('sPost')) {
          * @param string $date
          * @return string
          */
-        protected function validateDate(string $date):string
+        protected function validateDate(string $date): string
         {
             if ((int)$date) {
                 $date = Carbon::parse($date)->startOfMinute()->toDateTimeString();
@@ -501,8 +484,8 @@ if (!class_exists('sPost')) {
             } elseif ($request->has('en.pagetitle') && trim($request->input('en.pagetitle'))) {
                 $alias = Str::slug($request->input('en.pagetitle'), '-');
             } else {
-                $s_langDefault = $this->evo->getConfig('s_lang_default', '');
-                $alias = Str::slug($request->input($s_langDefault.'.pagetitle'), '-');
+                $s_langDefault = evo()->getConfig('s_lang_default', 'uk');
+                $alias = Str::slug($request->input($s_langDefault . '.pagetitle'), '-');
             }
 
             $siteContent = SiteContent::withTrashed()->get('alias')->pluck('alias')->toArray();
@@ -513,12 +496,12 @@ if (!class_exists('sPost')) {
                 $cnt = 1;
                 $tempAlias = $alias;
                 while (in_array($tempAlias, $aliases)) {
-                    $tempAlias = $alias.$cnt;
+                    $tempAlias = $alias . $cnt;
                     $cnt++;
                 }
                 $alias = $tempAlias;
             }
-            return  $alias;
+            return $alias;
         }
 
         /**
@@ -528,7 +511,7 @@ if (!class_exists('sPost')) {
          * @param $target
          * @return string
          */
-        public function getAutomaticTranslateTag($source, $target):string
+        public function getAutomaticTranslateTag($source, $target): string
         {
             $result = '';
             $langDefault = $this->langDefault();
@@ -555,7 +538,7 @@ if (!class_exists('sPost')) {
          * @param $value
          * @return bool
          */
-        public function updateTranslateTag($source, $target, $value):bool
+        public function updateTranslateTag($source, $target, $value): bool
         {
             $result = false;
             $tag = sPostTag::find($source);
@@ -576,9 +559,9 @@ if (!class_exists('sPost')) {
          * @param $lang
          * @return array
          */
-        public function getTagTexts($tagId, $lang):array
+        public function getTagTexts($tagId, $lang): array
         {
-            $texts = sPostTag::whereId($tagId)->select($lang.'_content')->first()->toArray();
+            $texts = sPostTag::whereId($tagId)->select($lang . '_content')->first()->toArray();
 
             return $texts ?? [];
         }
@@ -593,11 +576,10 @@ if (!class_exists('sPost')) {
          */
         public function setTagTexts($tagId, $lang, $texts)
         {
-
             $tag = sPostTag::find($tagId);
 
             foreach ($texts as $field => $text) {
-                $tag->{$lang.'_'.$field} = $text;
+                $tag->{$lang . '_' . $field} = $text;
             }
 
             return $tag->update();
@@ -615,7 +597,7 @@ if (!class_exists('sPost')) {
                             $img = '/<img[^>]+>/';
                             preg_match_all($img, $content, $imgMatchContents);
                             if (isset($imgMatchContents[0]) && is_array($imgMatchContents[0]) && count($imgMatchContents[0])) {
-                                foreach ($imgMatchContents[0] as &$imgMatchContent) {
+                                foreach ($imgMatchContents[0] as $imgMatchContent) {
                                     preg_match('/(src)=("[^"]*")/si', $imgMatchContent, $src);
                                     $src = trim($src[2], '"');
                                     preg_match('/(<img[^>]* width=")([\d.]+)(.*)/si', $imgMatchContent, $width);
@@ -625,15 +607,15 @@ if (!class_exists('sPost')) {
                                     preg_match('/(class)=("[^"]*")/si', $imgMatchContent, $class);
                                     $class = trim($class[2], '"');
                                     if ($width && $height) {
-                                        $src = str_replace('-'.$width.'x'.$height, '', $src);
+                                        $src = str_replace('-' . $width . 'x' . $height, '', $src);
                                     }
                                     if (substr($src, 0, 4) != 'http' && substr($src, 0, 1) != '/') {
                                         $src = MODX_BASE_URL . $src;
                                     }
                                     if (trim($class)) {
-                                        $class = 'class="'.$class.'"';
+                                        $class = 'class="' . $class . '"';
                                     }
-                                    $content = str_replace($imgMatchContent, '<img src="'.$src.'" '.$class.' />', $content);
+                                    $content = str_replace($imgMatchContent, '<img src="' . $src . '" ' . $class . ' />', $content);
                                 }
                             }
                             break;
@@ -651,10 +633,14 @@ if (!class_exists('sPost')) {
          * @param string $target
          * @return string
          */
-        protected function googleTranslate(string $text, string $source = 'ru', string $target = 'uk'):string
+        protected function googleTranslate(string $text, string $source = 'ru', string $target = 'uk'): string
         {
-            if ($source == 'ind') {$source = 'id';}
-            if ($target == 'ind') {$target = 'id';}
+            if ($source == 'ind') {
+                $source = 'id';
+            }
+            if ($target == 'ind') {
+                $target = 'id';
+            }
 
             if ($source == $target) {
                 return $text;
@@ -664,7 +650,7 @@ if (!class_exists('sPost')) {
 
             // Google translate URL
             $url = 'https://translate.google.com/translate_a/single?client=at&dt=t&dt=ld&dt=qca&dt=rm&dt=bd&dj=1&hl=uk-RU&ie=UTF-8&oe=UTF-8&inputm=2&otf=2&iid=1dd3b944-fa62-4b55-b330-74909a99969e';
-            $fields_string = 'sl=' . urlencode($source) . '&tl=' . urlencode($target) . '&q=' . urlencode($text) ;
+            $fields_string = 'sl=' . urlencode($source) . '&tl=' . urlencode($target) . '&q=' . urlencode($text);
 
             $ch = curl_init();
             curl_setopt($ch, CURLOPT_URL, $url);
@@ -688,7 +674,7 @@ if (!class_exists('sPost')) {
                 $out = 'No result';
             }
 
-            if(preg_match('%^\p{Lu}%u', $text) && !preg_match('%^\p{Lu}%u', $out)) { // Если оригинал с заглавной буквы то делаем и певерод с заглавной
+            if (preg_match('%^\p{Lu}%u', $text) && !preg_match('%^\p{Lu}%u', $out)) { // Если оригинал с заглавной буквы то делаем и певерод с заглавной
                 $out = mb_strtoupper(mb_substr($out, 0, 1)) . mb_substr($out, 1);
             }
 
@@ -700,10 +686,10 @@ if (!class_exists('sPost')) {
          *
          * @return string
          */
-        protected function moduleUrl ():string
+        protected function moduleUrl(): string
         {
             $module = SiteModule::whereName('sPost')->first();
-            return 'index.php?a=112&id='.$module->id;
+            return 'index.php?a=112&id=' . $module->id;
         }
 
         /**
@@ -714,20 +700,20 @@ if (!class_exists('sPost')) {
          * @param string $editor Which editor to use TinyMCE5, CodeMirror
          * @return string
          */
-        public function textEditor(string $ids, string $height = '500px', string $editor = ''):string
+        public function textEditor(string $ids, string $height = '500px', string $editor = ''): string
         {
             if (!trim($editor)) {
-                $editor = $this->evo->getConfig('which_editor', 'TinyMCE5');
+                $editor = evo()->getConfig('which_editor', 'TinyMCE5');
             }
             $elements = [];
             $ids = explode(",", $ids);
-            $s_lang = $this->evo->getConfig('s_lang_config', '');
+            $s_lang = evo()->getConfig('s_lang_config', '');
 
             if (trim($s_lang)) {
                 $s_lang = explode(',', $s_lang);
                 foreach ($s_lang as $lang) {
                     foreach ($ids as $id) {
-                        $elements[] = trim($lang)."_".trim($id);
+                        $elements[] = trim($lang) . "_" . trim($id);
                     }
                 }
             } else {
@@ -736,7 +722,7 @@ if (!class_exists('sPost')) {
                 }
             }
 
-            return implode("", $this->evo->invokeEvent('OnRichTextEditorInit', [
+            return implode("", evo()->invokeEvent('OnRichTextEditorInit', [
                 'editor' => $editor,
                 'elements' => $elements,
                 'height' => $height
