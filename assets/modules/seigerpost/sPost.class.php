@@ -420,9 +420,9 @@ if (!class_exists('sPost')) {
          * @param $cacheFolder
          * @return array|string
          */
-        public function imgResize($image, $width, $height)
-        {
-            return evo()->runSnippet('phpthumb', ['input' => $image, 'options' => 'w=' . $width . ',h=' . $height . ',zc=1']);
+        public function imgResize($image, $width, $height) {
+            $resize = evo()->runSnippet('phpthumb', ['input' => $image, 'options' => 'w='.$width.',h='.$height.',zc=1']);
+            return empty($resize) ? $image : $resize;
         }
 
         /**

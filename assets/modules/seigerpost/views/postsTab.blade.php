@@ -16,8 +16,8 @@
             <tr>
                 <td><b>{{$post['post']}}</b></td>
                 <td>
-                    <img src="{{$sPost->evo->getConfig('site_url', '/')}}{{$sPost->imgResize($post['cover'], 60, 40)}}" alt="{{$sPost->evo->getConfig('site_url', '/')}}{{$post['cover']}}" class="post-thumbnail">
-                    <a href="{{$sPost->evo->getConfig('site_url', '/')}}{{$post['alias']}}/" target="_blank"><b>{{$post['pagetitle']}}</b></a>
+                    <img src="{{evo()->getConfig('site_url', '/')}}{{$sPost->imgResize($post['cover'], 60, 40)}}" alt="{{evo()->getConfig('site_url', '/')}}{{$post['cover']}}" class="post-thumbnail">
+                    <a href="{{evo()->getConfig('site_url', '/')}}{{$post['alias']}}/" target="_blank"><b>{{$post['pagetitle']}}</b></a>
                 </td>
                 <td><b>{{$post['views']}}</b></td>
                 <td><b>{{$post['pub_date']}}</b></td>
