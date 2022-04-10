@@ -31,4 +31,6 @@
     .tagsTable tbody td:first-child {padding-top: 10px;}
     .tagsTable tbody td {width: {{100 / count($sPost->langTabs())}}%;}
     table .post-thumbnail{width: 70px; height: 45px;}
+    #copyright{position:fixed;bottom:0;right:0;background-color: #0057b8;color: #ffd700;padding: 5px;}
+    #copyright a{color: #ffd700;}
 </style>

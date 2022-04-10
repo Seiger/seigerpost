@@ -38,3 +38,4 @@ $_lang['seo_title'] = 'SEO Title';
 $_lang['seo_description'] = 'SEO Description';
 $_lang['seo_description_help'] = 'Enter an SEO Description for the post page';
 $_lang['navigation_tab'] = 'Page navigation';
+$_lang['slang_copyright'] = 'Development';

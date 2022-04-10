@@ -39,3 +39,4 @@ $_lang['seo_title'] = 'SEO Заголовок';
 $_lang['seo_description'] = 'SEO Описание';
 $_lang['seo_description_help'] = 'Введите SEO Описание для страницы поста';
 $_lang['navigation_tab'] = 'Навигация на странице';
+$_lang['slang_copyright'] = 'Разработка';

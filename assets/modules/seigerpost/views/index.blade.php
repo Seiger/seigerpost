@@ -108,6 +108,9 @@
             </div>
         </div>
     </div>
+    <div id="copyright">
+        {!!$_lang['slang_copyright']!!} <strong><a href="https://seigerit.com/" target="_blank">Seiger IT</a></strong>
+    </div>
 @endsection
 
 @push('scripts.top')

@@ -13,27 +13,27 @@
 
         <div class="row form-row">
             <div class="col-auto col-title">
-                <label for="{{$lang}}[seo_title]" class="warning" data-key="{{$lang}}[seo_title]">{{$_lang['seo_title']}}</label>
+                <label for="{{$lang}}[seotitle]" class="warning" data-key="{{$lang}}[seotitle]">{{$_lang['seo_title']}}</label>
                 <i class="fa fa-question-circle"
                    data-tooltip="{{$_lang['seo_title_help']}}"></i>
             </div>
             <div class="col" data-lang="{{$lang}}">
                 <div class="input-group">
-                    <input type="text" id="provider_seotitle_{{$lang}}" class="form-control " name="{{$lang}}[seo_title]"
-                           maxlength="255" value="{{$texts[$lang]['seo_title'] ?? ''}}" onchange="documentDirty=true;"
+                    <input type="text" id="provider_seotitle_{{$lang}}" class="form-control " name="{{$lang}}[seotitle]"
+                           maxlength="255" value="{{$texts[$lang]['seotitle'] ?? ''}}" onchange="documentDirty=true;"
                            spellcheck="true">
                 </div>
             </div>
         </div>
 
         <div class="row form-row">
-            <div class="col-auto col-title"><label for="seo_description" class="warning" data-key="seo_description">{{$_lang['seo_description']}}</label>
+            <div class="col-auto col-title"><label for="seodescription" class="warning" data-key="seodescription">{{$_lang['seo_description']}}</label>
                 <i class="fa fa-question-circle" data-tooltip="{{$_lang['seo_description_help']}}"></i>
             </div>
             <div class="col" data-lang="{{$lang}}">
                 <div class="input-group">
-                    <textarea id="provider_seodescription_{{$lang}}" class="form-control" name="{{$lang}}[seo_description]" rows="3" wrap="soft"
-                              onchange="documentDirty=true;">{{$texts[$lang]['seo_description'] ?? ''}}</textarea>
+                    <textarea id="provider_seodescription_{{$lang}}" class="form-control" name="{{$lang}}[seodescription]" rows="3" wrap="soft"
+                              onchange="documentDirty=true;">{{$texts[$lang]['seodescription'] ?? ''}}</textarea>
                 </div>
             </div>
         </div>
