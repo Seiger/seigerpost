@@ -11,7 +11,7 @@ $sPost = new sPost();
 $data['editor'] = '';
 $data['get'] = $_REQUEST['get'] ?? "posts";
 $data['sPost'] = $sPost;
-$data['lang_default'] = evo()->getConfig('s_lang_default', 'uk');
+$data['lang_default'] = $sPost->langDefault();
 $data['url'] = $sPost->url;
 
 switch ($data['get']) {

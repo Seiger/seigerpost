@@ -98,7 +98,7 @@
             <div class="modal-content">
                 <div class="modal-header">{{$_lang['spost_add_tag']}}</div>
                 <div class="modal-body">
-                    <p>{{$_lang['spost_add_new_tag']}} @if($sPost->langDefault() != 'base') {{$_lang['spost_on_lang']}} {{strtoupper($sPost->langDefault())}} @endif</p>
+                    <p>{{$_lang['spost_add_new_tag']}} @if($lang_default != 'base') {{$_lang['spost_on_lang']}} {{strtoupper($lang_default)}} @endif</p>
                     <input type="text" name="add_tag" value="" class="form-control">
                 </div>
                 <div class="modal-footer">
