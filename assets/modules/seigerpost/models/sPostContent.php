@@ -144,11 +144,15 @@ class sPostContent extends Eloquent\Model
      */
     public function getLinkAttribute()
     {
-        $base_url = evo()->getConfig('base_url', MODX_SITE_URL);
+        $base_url = evo()->getConfig('base_url', '/');
+        if ($base_url == '/') {
+            $base_url = MODX_SITE_URL;
+        }
+        $suffix_url = evo()->getConfig('friendly_url_suffix', '');
         if ($this->type == 0) {
-            $link = rtrim($base_url, '/') . $this->alias . '/';
+            $link = $base_url . $this->alias . $suffix_url;
         } else {
-            $link = rtrim($base_url, '/') . $this->alias . '/';
+            $link = $base_url . $this->alias . $suffix_url;
         }
         return $link;
     }
