@@ -2,8 +2,7 @@
 
 @section('content')
     <div class="notifier"><div class="notifier-txt"></div></div>
-    <h1><i class="fa fa-newspaper"></i> {{$_lang['spost_title']}}</h1>
-    <p style="margin-left:15px;">{!!$_lang['spost_description']!!}</p>
+    <h1 data-tooltip="{!!$_lang['spost_description']!!}"><i class="fa fa-newspaper"></i> {{$_lang['spost_title']}}</h1>
 
     @if(in_array($get, ['post', 'postAdd']))
         <form name="post" id="post" class="content" method="post" enctype="multipart/form-data" action="{!!$url!!}&get=postSave" onsubmit="documentDirty=false;">
