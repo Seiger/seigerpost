@@ -114,6 +114,8 @@ class sPostContent extends Eloquent\Model
     /**
      * Get the published day on human format
      *
+     * isoFormat('D MMM, YYYY') - 24 MAY, 2022
+     *
      * @return string
      */
     public function getPubFormatAttribute()
