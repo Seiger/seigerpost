@@ -158,4 +158,20 @@ class sPostContent extends Eloquent\Model
         }
         return $link;
     }
+
+    /**
+     * Get the post cover src link
+     *
+     * @return string cover_src
+     */
+    public function getCoverSrcAttribute()
+    {
+        if (!empty($this->cover) && is_file(MODX_BASE_PATH . $this->cover)) {
+            $coverSrc = MODX_SITE_URL . $this->cover;
+        } else {
+            $coverSrc = MODX_SITE_URL . 'assets/images/noimage.png';
+        }
+
+        return $coverSrc;
+    }
 }
