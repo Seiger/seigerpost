@@ -248,6 +248,7 @@ if (!class_exists('sPost')) {
             $post->cover = evo()->db->escape($request->cover);
             $post->type = (int)$request->type;
             $post->author = (int)$request->author;
+            $post->recommend = (is_array($request->recommends) && count($request->recommends)) ? implode(',', $request->recommends) : '';
             $post->save();
 
             foreach ($this->langTabs() as $lang => $label) {

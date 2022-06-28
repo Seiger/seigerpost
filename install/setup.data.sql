@@ -10,6 +10,7 @@ CREATE TABLE IF NOT EXISTS `{PREFIX}s_post_contents` (
     `cover` varchar(512) NOT NULL,
     `type` tinyint(4) NOT NULL DEFAULT 0 COMMENT '0-Article|1-News',
     `views` int(11) NOT NULL DEFAULT 0,
+    `recommend` varchar(512) NOT NULL DEFAULT '',
     `pub_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
     `created_at` timestamp NULL DEFAULT NULL,
     `updated_at` timestamp NULL DEFAULT NULL,

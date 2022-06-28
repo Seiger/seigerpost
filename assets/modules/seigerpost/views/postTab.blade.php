@@ -106,6 +106,22 @@
             </div>
         </div>
     </div>
+
+    <div class="row-col col-lg-6 col-md-6 col-12">
+        <div class="row form-row">
+            <div class="col-auto col-title">
+                <label for="categories" class="warning">{{$_lang["spost_recommend"]}}</label>
+            </div>
+            <div class="col">
+                @php($recommends = (trim($post->recommend) ? explode(',', $post->recommend) : []))
+                <select id="recommends" class="form-control select2" name="recommends[]" multiple onchange="documentDirty=true;">
+                    @foreach(\sPost\Models\sPostTranslate::all() as $value)
+                        <option value="{{$value->post}}" @if(in_array($value->post, $recommends)) selected @endif>{{$value->pagetitle}}</option>
+                    @endforeach
+                </select>
+            </div>
+        </div>
+    </div>
 </div>
 
 @push('scripts.bot')
